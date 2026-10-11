@@ -1,0 +1,260 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.0, pytest-9.1.1, pluggy-1.6.0 -- /workspace/Build a Resilient Mortgage Document Extraction System/01-design-resilient-extraction-schema/starter/.venv/bin/python3.13
+cachedir: .pytest_cache
+rootdir: /workspace/Build a Resilient Mortgage Document Extraction System/01-design-resilient-extraction-schema/starter
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 5 items
+
+tests/test_us01_schema.py::test_ac_01_01_tool_definition_shape FAILED    [ 20%]
+tests/test_us01_schema.py::test_ac_01_02_required_and_optional_fields FAILED [ 40%]
+tests/test_us01_schema.py::test_ac_01_03_enum_other_with_detail_field FAILED [ 60%]
+tests/test_us01_schema.py::test_ac_01_04_at_least_three_nullable_fields FAILED [ 80%]
+tests/test_us01_schema.py::test_ac_01_05_list_nullable_fields_returns_dotted_paths FAILED [100%]
+
+=================================== FAILURES ===================================
+_____________________ test_ac_01_01_tool_definition_shape ______________________
+
+    def test_ac_01_01_tool_definition_shape() -> None:
+>       tool = tools.extract_mortgage_data()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_us01_schema.py:8: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def extract_mortgage_data() -> ToolDefinition:
+        """Return the canonical mortgage-data extractor tool definition.
+    
+        The tool's input_schema is the full mortgage_data_schema. The description
+        is the model's read-once instruction sheet for what the tool extracts.
+        """
+        # TODO: Return a ToolDefinition with:
+        #   - name: "extract_mortgage_data"
+        #   - description: a short paragraph that names the tool's job AND
+        #     instructs the model to (a) emit null for fields the document does
+        #     not state, and (b) emit "other" plus a *_detail value when a
+        #     categorical enum value does not fit.
+        #   - input_schema: the result of mortgage_data_schema()
+>       raise NotImplementedError("Exercise 1: implement extract_mortgage_data()")
+E       NotImplementedError: Exercise 1: implement extract_mortgage_data()
+
+mortgage_extractor/tools.py:40: NotImplementedError
+__________________ test_ac_01_02_required_and_optional_fields __________________
+
+    def test_ac_01_02_required_and_optional_fields() -> None:
+>       s = schema.mortgage_data_schema()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_us01_schema.py:18: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def mortgage_data_schema() -> JsonSchema:
+        """Return the canonical JSON Schema for mortgage data extraction.
+    
+        The schema is an object with four top-level sub-objects: borrower,
+        property, loan, and income. Each sub-object has its own ``properties`` map
+        and ``required`` list. The top-level ``required`` list names the
+        sub-objects that must always be present.
+    
+        Design rules for this schema (these are the LO):
+    
+        1. A field that is reliably present in the document goes in the relevant
+           sub-object's ``required`` list and has a plain ``type: "<base>"``.
+        2. A field that is often absent uses the nullable union idiom:
+           ``type: ["<base>", "null"]`` and stays out of ``required``.
+        3. A categorical field whose value space will grow over time uses an
+           ``enum`` ending in ``"other"`` and is paired with a sibling
+           ``*_detail`` string field that captures the free-text spillover when
+           the model emits ``"other"``.
+        4. Per-document-type ``required`` lists (set by ``tools.doc_type_extractor``
+           at extraction time) override the schema's top-level required list. Mark
+           only what every document type carries here at the schema level.
+        """
+        # TODO: Build and return the JSON Schema dictionary per the design rules
+        # in this docstring. At minimum, satisfy these acceptance criteria from
+        # the PRD (also enforced by tests/test_us01_schema.py):
+        #
+        #   - top-level type is "object" with a non-empty properties map.
+        #   - borrower.full_name, property.address, and loan.amount are
+        #     each required in their sub-object. Optional fields like
+        #     borrower.coborrower_name and property.year_built live in
+        #     properties but NOT in required.
+        #   - at least one categorical field uses enum: [..., "other"]
+        #     paired with a sibling *_detail string field.
+        #   - at least three fields the document frequently omits are
+        #     typed as ["<base>", "null"] — e.g. borrower.coborrower_name,
+        #     property.hoa_dues_monthly, income.bonus_ytd.
+        #
+        # See the build-friction notes: every entry in a per-document-type
+        # `required` list is a license to fabricate when the document is silent.
+        # Be deliberate about what you require.
+>       raise NotImplementedError("Exercise 1: implement mortgage_data_schema()")
+E       NotImplementedError: Exercise 1: implement mortgage_data_schema()
+
+mortgage_extractor/schema.py:69: NotImplementedError
+__________________ test_ac_01_03_enum_other_with_detail_field __________________
+
+    def test_ac_01_03_enum_other_with_detail_field() -> None:
+>       s = schema.mortgage_data_schema()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_us01_schema.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def mortgage_data_schema() -> JsonSchema:
+        """Return the canonical JSON Schema for mortgage data extraction.
+    
+        The schema is an object with four top-level sub-objects: borrower,
+        property, loan, and income. Each sub-object has its own ``properties`` map
+        and ``required`` list. The top-level ``required`` list names the
+        sub-objects that must always be present.
+    
+        Design rules for this schema (these are the LO):
+    
+        1. A field that is reliably present in the document goes in the relevant
+           sub-object's ``required`` list and has a plain ``type: "<base>"``.
+        2. A field that is often absent uses the nullable union idiom:
+           ``type: ["<base>", "null"]`` and stays out of ``required``.
+        3. A categorical field whose value space will grow over time uses an
+           ``enum`` ending in ``"other"`` and is paired with a sibling
+           ``*_detail`` string field that captures the free-text spillover when
+           the model emits ``"other"``.
+        4. Per-document-type ``required`` lists (set by ``tools.doc_type_extractor``
+           at extraction time) override the schema's top-level required list. Mark
+           only what every document type carries here at the schema level.
+        """
+        # TODO: Build and return the JSON Schema dictionary per the design rules
+        # in this docstring. At minimum, satisfy these acceptance criteria from
+        # the PRD (also enforced by tests/test_us01_schema.py):
+        #
+        #   - top-level type is "object" with a non-empty properties map.
+        #   - borrower.full_name, property.address, and loan.amount are
+        #     each required in their sub-object. Optional fields like
+        #     borrower.coborrower_name and property.year_built live in
+        #     properties but NOT in required.
+        #   - at least one categorical field uses enum: [..., "other"]
+        #     paired with a sibling *_detail string field.
+        #   - at least three fields the document frequently omits are
+        #     typed as ["<base>", "null"] — e.g. borrower.coborrower_name,
+        #     property.hoa_dues_monthly, income.bonus_ytd.
+        #
+        # See the build-friction notes: every entry in a per-document-type
+        # `required` list is a license to fabricate when the document is silent.
+        # Be deliberate about what you require.
+>       raise NotImplementedError("Exercise 1: implement mortgage_data_schema()")
+E       NotImplementedError: Exercise 1: implement mortgage_data_schema()
+
+mortgage_extractor/schema.py:69: NotImplementedError
+_________________ test_ac_01_04_at_least_three_nullable_fields _________________
+
+    def test_ac_01_04_at_least_three_nullable_fields() -> None:
+>       s = schema.mortgage_data_schema()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_us01_schema.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def mortgage_data_schema() -> JsonSchema:
+        """Return the canonical JSON Schema for mortgage data extraction.
+    
+        The schema is an object with four top-level sub-objects: borrower,
+        property, loan, and income. Each sub-object has its own ``properties`` map
+        and ``required`` list. The top-level ``required`` list names the
+        sub-objects that must always be present.
+    
+        Design rules for this schema (these are the LO):
+    
+        1. A field that is reliably present in the document goes in the relevant
+           sub-object's ``required`` list and has a plain ``type: "<base>"``.
+        2. A field that is often absent uses the nullable union idiom:
+           ``type: ["<base>", "null"]`` and stays out of ``required``.
+        3. A categorical field whose value space will grow over time uses an
+           ``enum`` ending in ``"other"`` and is paired with a sibling
+           ``*_detail`` string field that captures the free-text spillover when
+           the model emits ``"other"``.
+        4. Per-document-type ``required`` lists (set by ``tools.doc_type_extractor``
+           at extraction time) override the schema's top-level required list. Mark
+           only what every document type carries here at the schema level.
+        """
+        # TODO: Build and return the JSON Schema dictionary per the design rules
+        # in this docstring. At minimum, satisfy these acceptance criteria from
+        # the PRD (also enforced by tests/test_us01_schema.py):
+        #
+        #   - top-level type is "object" with a non-empty properties map.
+        #   - borrower.full_name, property.address, and loan.amount are
+        #     each required in their sub-object. Optional fields like
+        #     borrower.coborrower_name and property.year_built live in
+        #     properties but NOT in required.
+        #   - at least one categorical field uses enum: [..., "other"]
+        #     paired with a sibling *_detail string field.
+        #   - at least three fields the document frequently omits are
+        #     typed as ["<base>", "null"] — e.g. borrower.coborrower_name,
+        #     property.hoa_dues_monthly, income.bonus_ytd.
+        #
+        # See the build-friction notes: every entry in a per-document-type
+        # `required` list is a license to fabricate when the document is silent.
+        # Be deliberate about what you require.
+>       raise NotImplementedError("Exercise 1: implement mortgage_data_schema()")
+E       NotImplementedError: Exercise 1: implement mortgage_data_schema()
+
+mortgage_extractor/schema.py:69: NotImplementedError
+___________ test_ac_01_05_list_nullable_fields_returns_dotted_paths ____________
+
+    def test_ac_01_05_list_nullable_fields_returns_dotted_paths() -> None:
+>       s = schema.mortgage_data_schema()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_us01_schema.py:56: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def mortgage_data_schema() -> JsonSchema:
+        """Return the canonical JSON Schema for mortgage data extraction.
+    
+        The schema is an object with four top-level sub-objects: borrower,
+        property, loan, and income. Each sub-object has its own ``properties`` map
+        and ``required`` list. The top-level ``required`` list names the
+        sub-objects that must always be present.
+    
+        Design rules for this schema (these are the LO):
+    
+        1. A field that is reliably present in the document goes in the relevant
+           sub-object's ``required`` list and has a plain ``type: "<base>"``.
+        2. A field that is often absent uses the nullable union idiom:
+           ``type: ["<base>", "null"]`` and stays out of ``required``.
+        3. A categorical field whose value space will grow over time uses an
+           ``enum`` ending in ``"other"`` and is paired with a sibling
+           ``*_detail`` string field that captures the free-text spillover when
+           the model emits ``"other"``.
+        4. Per-document-type ``required`` lists (set by ``tools.doc_type_extractor``
+           at extraction time) override the schema's top-level required list. Mark
+           only what every document type carries here at the schema level.
+        """
+        # TODO: Build and return the JSON Schema dictionary per the design rules
+        # in this docstring. At minimum, satisfy these acceptance criteria from
+        # the PRD (also enforced by tests/test_us01_schema.py):
+        #
+        #   - top-level type is "object" with a non-empty properties map.
+        #   - borrower.full_name, property.address, and loan.amount are
+        #     each required in their sub-object. Optional fields like
+        #     borrower.coborrower_name and property.year_built live in
+        #     properties but NOT in required.
+        #   - at least one categorical field uses enum: [..., "other"]
+        #     paired with a sibling *_detail string field.
+        #   - at least three fields the document frequently omits are
+        #     typed as ["<base>", "null"] — e.g. borrower.coborrower_name,
+        #     property.hoa_dues_monthly, income.bonus_ytd.
+        #
+        # See the build-friction notes: every entry in a per-document-type
+        # `required` list is a license to fabricate when the document is silent.
+        # Be deliberate about what you require.
+>       raise NotImplementedError("Exercise 1: implement mortgage_data_schema()")
+E       NotImplementedError: Exercise 1: implement mortgage_data_schema()
+
+mortgage_extractor/schema.py:69: NotImplementedError
+=========================== short test summary info ============================
+FAILED tests/test_us01_schema.py::test_ac_01_01_tool_definition_shape - NotIm...
+FAILED tests/test_us01_schema.py::test_ac_01_02_required_and_optional_fields
+FAILED tests/test_us01_schema.py::test_ac_01_03_enum_other_with_detail_field
+FAILED tests/test_us01_schema.py::test_ac_01_04_at_least_three_nullable_fields
+FAILED tests/test_us01_schema.py::test_ac_01_05_list_nullable_fields_returns_dotted_paths
+============================== 5 failed in 0.25s ===============================

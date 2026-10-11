@@ -1,0 +1,15 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.0, pytest-9.1.1, pluggy-1.6.0 -- /workspace/Build a Resilient Mortgage Document Extraction System/01-design-resilient-extraction-schema/solution/.venv/bin/python3.13
+cachedir: .pytest_cache
+rootdir: /workspace/Build a Resilient Mortgage Document Extraction System/01-design-resilient-extraction-schema/solution
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 5 items
+
+tests/test_us01_schema.py::test_ac_01_01_tool_definition_shape PASSED    [ 20%]
+tests/test_us01_schema.py::test_ac_01_02_required_and_optional_fields PASSED [ 40%]
+tests/test_us01_schema.py::test_ac_01_03_enum_other_with_detail_field PASSED [ 60%]
+tests/test_us01_schema.py::test_ac_01_04_at_least_three_nullable_fields PASSED [ 80%]
+tests/test_us01_schema.py::test_ac_01_05_list_nullable_fields_returns_dotted_paths PASSED [100%]
+
+============================== 5 passed in 0.19s ===============================
